@@ -1,58 +1,23 @@
-import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.Map;
+import MathSolvers.Fibonacci2;
+
+import java.io.FileNotFoundException;
+import java.math.BigInteger;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class Main {
     
-    public static void main(String[] args) {
-        String str = "I like visiting my friend Will, who lives in Orlando, Florida.".toLowerCase().replaceAll("[^a-z' ]", "");
-        Map<Character, Integer> letterFreq = new HashMap<>();                       // (I -> 8)
-        Map<Character, Map.Entry<String, Integer>> maxWord = new HashMap<>();    // (I -> ("visiting" -> 3) )
-        
-        for ( String word : str.split(" ") ) {
-            int count[] = new int[26];
-            
-            for ( char letter : word.toCharArray() )
-                if ( letter > 'a' && letter < 'z' )
-                    count[letter - 'a']++;
-            
-            for ( int i = 0; i < count.length; i++ ) {
-                int iVal = count[i];
-                if ( iVal != 0 ) {
-                    letterFreq.compute(toChar(i), (c, val) -> val == null ? 1 : val + 1);
-                    updateEntry(maxWord, word, i, iVal);
-                }
-            }
-        }
-        
-        int maxNumWords = 0;
-        char maxChar = ' ';
-        for ( int i = 0; i < 26; i++ ) {
-            int curMax = letterFreq.getOrDefault(toChar(i), 0);
-            if ( maxNumWords < curMax ) {
-                maxChar = toChar(i);
-                maxNumWords = curMax;
-            }
-        }
-        
-        System.out.println("\'" + String.valueOf(maxChar).toUpperCase() + "\' was repeated in " + maxNumWords
-                                   + " words, and appeared in \"" + maxWord.get(maxChar).getKey() + "\" most frequently");
+    public static void main(String[] args) throws FileNotFoundException, ExecutionException, InterruptedException {
+        ExecutorService es = Executors.newSingleThreadExecutor();
+        Fibonacci2 f = new Fibonacci2(BigInteger.valueOf(12345678));
+        Future<BigInteger> f1 = es.submit(f);
+        System.out.println("Answer is " + f1.get());
+        es.shutdown();
+        Fibonacci2.threadPool.shutdown();
     }
     
-    
-    /*-----------------helper functions-----------------------*/
-    private static void updateEntry(Map<Character, Map.Entry<String, Integer>> maxWord, String word, int i, int iVal) {
-        Map.Entry<String, Integer> entry = maxWord.getOrDefault(toChar(i), new AbstractMap.SimpleEntry<>(word, iVal));
-        if ( entry.getValue() <= iVal ) {
-            entry = new AbstractMap.SimpleEntry<>(word, iVal);
-            maxWord.put(toChar(i), entry);
-        }
-    }
-    
-    private static char toChar(int i) {
-        return (char) (i + 'a');
-    }
     
 }
 
-       
